@@ -1,0 +1,17 @@
+<?php
+require "db_connection.php";
+parse_str($_POST['data'], $fdata);
+$istaskassign = 1;
+$currentDate = date("d-m-Y");
+$expDate = $fdata['ddate'];
+$expD=date_create($expDate);
+$curD=date_create($currentDate);
+$diff=date_diff($expD,$curD);
+$ldays = $diff->format("%R%a");
+$sql = "update tbl_emp set task = '".$fdata['taskDesc']."', istaskassign = '".$istaskassign."', tpriority = '".$fdata['taskPrio']."', ddate ='".$fdata['ddate']."', lDays='".$ldays."' where id = '".$_POST['uid']."'";
+$result = $conn->query($sql);
+if($result)
+{
+	echo "success";
+}	
+?>

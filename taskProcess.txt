@@ -1,0 +1,111 @@
+<?php
+require "db_connection.php";
+$userId = $_REQUEST['uid'];
+$actionType = $_REQUEST['type'];
+$data=$conn->query("select * from tbl_emp where id='".$userId."'")->fetch_object();
+?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+<input type="hidden" id="uid" value="<?=$userId?>">
+<div class="table-responsible">
+	<table class="table table-bordered">
+		<head>
+			<tr>
+				<th>Name</th>
+			    <th>Genter</th>
+			    <th>Designation</th>
+			</tr>
+		</head>				
+		<tr>
+			<td><?=$data->name?></td>
+			<td><?=$data->gender?></td>
+			<td><?=$data->desig?></td>
+		</tr>
+
+	</table>
+</div>
+<?php 
+	if($actionType =='changetask')
+	{
+?>
+<form class="form-horizontal" id="taskInput">
+      		<div class="form-group">
+      			<label class="control-label col-sm-6 col-md-3" for="taskDesciption">Task Description</label> 
+      			<div class="col-sm-6 col-md-6">
+      				<textarea class="form-control" id="taskDesc" name="taskDesc" rows="2"><?=$data->task?></textarea>
+      				<span class="trmsg"></span>
+      			</div>	
+      		</div>      		
+      		<div class="form-group">
+				<label class="control-label  col-sm-6 col-md-3" for="Priority">Priority</label>
+				<div class="col-sm-6 col-md-6">
+					<select id="taskPrio" name="taskPrio" class="form-control">
+					  <option <?php if($data->tpriority =='Low'){echo 'selected';}?>>Low</option>
+					  <option <?php if($data->tpriority =='Medium'){echo 'selected';}?>>Medium</option>
+					  <option <?php if($data->tpriority =='High'){echo 'selected';}?>>High</option>
+					</select> 
+				</div>
+			</div>
+		  	<div class="form-group">
+		  	<label class="control-label col-sm-6 col-md-3" for="company">Deadline</label>
+		  	<div class="col-sm-6 col-md-6"> 
+			    <div id="filterDate2">
+			      <div class="input-group date" data-date-format="dd-mm-yyyy">
+			        <input  type="text" class="form-control col-sm-6 col-md-4" name="ddate" id="ddate" value="<?=$data->ddate?>">
+			        <div class="input-group-addon" >
+			          <span class="glyphicon glyphicon-th"></span>
+			        </div>
+			      </div>		      
+			    </div>
+			    <span class="dlmsg"></span>
+			</div>
+		  </div>
+		</form>
+		
+<?php 
+	}
+	else
+	{
+?>
+	<form class="form-horizontal" id="taskInput">
+      		<div class="form-group">
+      			<label class="control-label col-sm-6 col-md-3" for="taskDesciption">Task Description</label> 
+      			<div class="col-sm-6 col-md-6">
+      				<textarea class="form-control" id="taskDesc" name="taskDesc" rows="2"></textarea>
+      				<span class="trmsg"></span>
+      			</div>	
+      		</div>      		
+      		<div class="form-group">
+				<label class="control-label  col-sm-6 col-md-3" for="Priority">Priority</label>
+				<div class="col-sm-6 col-md-6">
+					<select id="taskPrio" name="taskPrio" class="form-control">
+					  <option>Low</option>
+					  <option>Medium</option>
+					  <option>High</option>
+					</select> 
+				</div>
+			</div>
+		  	<div class="form-group">
+		  	<label class="control-label col-sm-6 col-md-3" for="company">Deadline</label>
+		  	<div class="col-sm-6 col-md-6"> 
+			    <div id="filterDate2">
+			      <div class="input-group date" data-date-format="dd-mm-yyyy">
+			        <input  type="text" class="form-control col-sm-6 col-md-4" name="ddate" id="ddate" placeholder="Select Date">
+			        <div class="input-group-addon" >
+			          <span class="glyphicon glyphicon-th"></span>			        </div>
+
+			      </div>		      
+			    </div>
+			    <span class="dlmsg"></span>
+			</div>
+		  </div>
+		</form>
+<?php } ?>
+<h5><div id="message"></div></h5>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+<script type="text/javascript">
+	$('.input-group.date').datepicker({
+	     startDate: '0',    
+	     autoclose: true,
+	     todayHighlight: true,
+	 });
+</script>	

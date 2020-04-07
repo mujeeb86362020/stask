@@ -1,0 +1,134 @@
+<?php 
+require "db_connection.php";
+?>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sechdule Task</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+</head>
+<body>
+<h1 class="text-center">Sechdule Task</h1>
+<div class="container">
+	<div class="table-responsible">
+	<table class="table">
+		<thead>
+      <tr>
+        <th>SN</th>
+        <th>Name</th>
+        <th>Genter</th>
+        <th>Designation</th>
+        <th>Task</th>
+        <th>Priority</th>
+        <th>Deadline </th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+    	<?php
+    	$sn = 1;
+    	$sql = "select * from tbl_emp order by lDays DESC";
+		if($data=$conn->query($sql))
+		{
+    		while($row=$data->fetch_object())
+    		{?>
+		      <tr>
+		      	<td><?=$sn?></td>
+		      	<td><?=$row->name?></td>
+		      	<td><?=$row->gender?></td>
+		      	<td><?=$row->desig?></td>
+		      	<td><?=$row->task?></td>
+		      	<td><?=$row->tpriority?></td>
+		      	<td>
+		      		<?php 
+		      			if($row->lDays>0){echo "Deadline Passed";}
+		      			else{echo $row->ddate;}
+		      		?>
+		      	</td>
+		      	<td>
+		      		<?php
+		      			if($row->istaskassign)
+		      			{
+		      				echo '<span class="btn btn-success" onclick="taskAction(\''.$row->id.'\',\''. "changetask".'\')">Change Task</span>';
+		      			}
+		      			else
+		      			{
+		      				echo '<span class="btn btn-primary" onclick="taskAction(\''.$row->id.'\',\''. "newtask".'\')">Add Task</span>';
+		      			}	
+		      		?>
+		      	</td>
+		      </tr>
+      		<?php
+      		$sn++;
+      		}
+		}	
+    	?>
+    </tbody>  
+	</table>
+	</div>
+</div>
+
+
+<div class="modal fade" id="taskAssg" tabindex="-1" role="dialog" aria-labelledby="taskModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title text-center" id="taskTitle">Add Task</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div id="uinfo"></div>
+      	
+      </div>      	
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="saveTask">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#saveTask').click(function(e){
+			e.preventDefault();
+			if($('#taskDesc').val() == '')
+			{
+				$(".trmsg").text('Please enter some value').addClass('alert alert-warning');
+			}
+			else if($('#ddate').val() == '')
+			{
+				$(".dlmsg").text('Please enter some value').addClass('alert alert-warning');
+			}
+			else
+			{
+				$.post('saveTask.php', {data:$("#taskInput").serialize(),uid:$("#uid").val()}, function(response){
+					if(response == 'success')
+					{
+						$("#message").text('Task has been save successfully').addClass('alert alert-success');
+						setTimeout(refresh, 2000);
+					}	
+				});
+			}	
+		}); 
+	});
+
+	function refresh(){
+		location.reload(true);
+	}
+	 function taskAction(uid, type)
+	 {
+	 	$.post('taskporcess.php',{uid:uid, type:type}, function(response){
+	 		$('#uinfo').html(response);	
+	 		$('#taskAssg').modal('show');
+	 	});	 	
+	 }    
+    </script>
+</body>
+</html>
